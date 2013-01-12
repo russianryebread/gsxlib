@@ -114,7 +114,7 @@ class GsxLib
                 'userTimeZone'      => $tz,
             )
         );
-syslog(LOG_ERR, print_r($a, true));
+        
         try {
             $this->session_id = $this->client
                 ->Authenticate($a)
@@ -523,15 +523,15 @@ syslog(LOG_ERR, print_r($a, true));
     {
         $result = false;
         $rex = array(
-            'partNumber'    => '/^([a-z]{1,2})?\d{3}\-\d{4}$/i',
-            'serialNumber'  => '/^[a-z0-9]{11,12}$/i',
-            'eeeCode'       => '/^[A-Z0-9]{3,4}$/',     // only match ALL-CAPS!
-            'returnOrder'   => '/^7\d{9}$/',
-            'repairNumber'  => '/^\d{12}$/',
-            'dispatchId'    => '/^G\d{9}$/i',
+            'partNumber'            => '/^([A-Z]{1,2})?\d{3}\-?(\d{4}|[A-Z]{2})(/[A-Z])?$/i',
+            'serialNumber'          => '/^[a-z0-9]{11,12}$/i',
+            'eeeCode'               => '/^[A-Z0-9]{3,4}$/',     // only match ALL-CAPS!
+            'returnOrder'           => '/^7\d{9}$/',
+            'repairNumber'          => '/^\d{12}$/',
+            'dispatchId'            => '/^G\d{9}$/',
             'alternateDeviceId'     => '/^\d{15}$/',
-            'diagnosticEventNumber' => '/^\d{23}$/'
-            // 12715075303192012074604
+            'diagnosticEventNumber' => '/^\d{23}$/',
+            'productName'           => '/^i?Mac/',
         );
 
         foreach ($rex as $k => $v) {
