@@ -72,7 +72,7 @@ switch( $noun )
   	}
 }
 
-$gsx = new GsxLib( $opts['s'], $opts['u'], $opts['p'], $environment, $region );
+$gsx = GsxLib::getInstance( $opts['s'], $opts['u'], $opts['p'], $environment, $region );
 
 if( !isset( $opts['d'] )) {
   $data = `/usr/sbin/system_profiler SPHardwareDataType | awk '/Serial Number/ {print $4}'`;
@@ -89,7 +89,7 @@ switch( $noun ) {
   case 'warranty':
   	switch( $verb ) {
   		case 'status':
-  			$result = $gsx->warrantyStatus( $data );
+  			$result = $gsx->warrantyStatus( $data['serialNumber'] );
   			break;
   	}
   	
