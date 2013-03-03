@@ -407,13 +407,11 @@ class GsxLib
     */
     public function warrantyStatus($serialNumber)
     {
-        if(!$this->isValidSerialNumber($serialNumber)) {
-            exit('Invalid serial number: ' . $serialNumber);
+        if( !is_array( $serialNumber )) {
+            $serialNumber = array('serialNumber' => $serialNumber);
         }
 
-        $req = array('WarrantyStatus' => array(
-            'unitDetail'  => array('serialNumber' => $serialNumber)
-        ));
+        $req = array( 'WarrantyStatus' => array( 'unitDetail'  => $serialNumber ));
 
         return $this->request($req)->warrantyDetailInfo;
 
@@ -466,6 +464,7 @@ class GsxLib
     public function isValidSerialNumber($serialNumber)
     {
         $serialNumber = trim( $serialNumber );
+
         // SNs should never start with an S, but they're often coded into barcodes
         // and since an "old- ormat" SN + S would still qualify as a "new format" SN,
         // we strip it here and not in self::looksLike

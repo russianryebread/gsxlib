@@ -18,8 +18,8 @@ if (TRUE) {
   error_reporting( E_ALL|E_STRICT );
 }
 
-$verbs = array( 'create', 'lookup', 'update', 'status', 'label', 'pending', 'details' );
 $nouns = array( 'repair', 'part', 'dispatch', 'order', 'return', 'warranty' );
+$verbs = array( 'create', 'lookup', 'update', 'status', 'label', 'pending', 'details' );
 
 $nouns_str = implode( ', ', $nouns );
 $verbs_str = implode( ', ', $verbs );
@@ -40,22 +40,22 @@ usage: gsxcl -s sold-to -u username -p password [-r region] [-e environment] [-f
   -f  format      the output format. Either print_r (default), json, xml or csv
   -d  data        data for the query (serial number, order confirmation, repair number, EEE code, etc
                   Defaults to this machine's serial number
-      verb        one of: {$nouns_str}
       noun        one of: {$verbs_str}
+      verb        one of: {$nouns_str}
 
 EOT;
   exit();
 }
 
 $opts = getopt( 's:u:p:r:e:m:q:f:d:' );
-list( $verb, $noun ) = array_slice( $argv, -2, 2 );
-
-if( !in_array( $verb, $verbs )) {
-	exit( "Error: invalid verb - {$verb}.\n" );
-}
+list( $noun, $verb ) = array_slice( $argv, -2, 2 );
 
 if( !in_array( $noun, $nouns )) {
-	exit( "Error: invalid noun - {$noun}.\n" );
+  exit( "Error: invalid noun - {$noun}.\n" );
+}
+
+if( !in_array( $verb, $verbs )) {
+  exit( "Error: invalid verb - {$verb}.\n" );
 }
 
 $region = ( isset( $opts['r'] )) ? $opts['r'] : 'emea';
@@ -64,65 +64,66 @@ $environment = ( isset( $opts['e'] )) ? $opts['e'] : null;
 
 switch( $noun )
 {
-	case 'warranty':
-		$valid_verbs = array( 'status' );
-  	if( !in_array( $verb, $valid_verbs )) {
-			printf( "Error: verb should be one of - %s\n", implode( ',', $valid_verbs ));
-			exit();
-  	}
+  case 'warranty':
+    $valid_verbs = array( 'status' );
+    if( !in_array( $verb, $valid_verbs )) {
+      printf( "Error: verb should be one of - %s\n", implode( ',', $valid_verbs ));
+      exit();
+    }
 }
 
 $gsx = GsxLib::getInstance( $opts['s'], $opts['u'], $opts['p'], $environment, $region );
 
-if( !isset( $opts['d'] )) {
-  $data = `/usr/sbin/system_profiler SPHardwareDataType | awk '/Serial Number/ {print $4}'`;
- 	$data = "serialNumber={$data}";
-} else {
+if( isset( $opts['d'] )) {
   $data = $opts['d'];
+} else {
+  // No data provided, default to this machine's serial number
+  $data = `/usr/sbin/system_profiler SPHardwareDataType | awk '/Serial Number/ {print $4}'`;
+  $data = "serialNumber={$data}";
 }
 
 @list( $k, $v ) = explode( '=', $data );
 $data = ($k) ? array( $k => $v ) : $data;
 
 switch( $noun ) {
-	
+  
   case 'warranty':
-  	switch( $verb ) {
-  		case 'status':
-  			$result = $gsx->warrantyStatus( $data['serialNumber'] );
-  			break;
-  	}
-  	
+    switch( $verb ) {
+      case 'status':
+        $result = $gsx->warrantyStatus( $data );
+        break;
+    }
+    
   break;
   
   case 'part':
     switch( $verb ) {
-  		case 'lookup':
-  			$result = $gsx->partsLookup( $data );
-  			break;
-	  	case 'pending':
-  		  $result = $gsx->partsPendingReturn( $data );
-		    break;
-			case 'details':
-  		  $result = $gsx->partsPendingReturn( $data );
-		    break;
-  	}
-  	
+      case 'lookup':
+        $result = $gsx->partsLookup( $data );
+        break;
+      case 'pending':
+        $result = $gsx->partsPendingReturn( $data );
+        break;
+      case 'details':
+        $result = $gsx->partsPendingReturn( $data );
+        break;
+    }
+    
   break;
   
   case 'repair':
     switch( $verb ) {
-  		case 'lookup':
-  			$result = $gsx->repairLookup( $data );
-  			break;
-  		case 'details':
-  		  $result = $gsx->partsPendingReturn( $data );
-		    break;
-		  case 'status':
-		    $result = $gsx->repairStatus( $query );
-    		break;
-  	}
-  	
+      case 'lookup':
+        $result = $gsx->repairLookup( $data );
+        break;
+      case 'details':
+        $result = $gsx->partsPendingReturn( $data );
+        break;
+      case 'status':
+        $result = $gsx->repairStatus( $query );
+        break;
+    }
+    
   case 'model':
     $result = $gsx->productModel( $query );
     break;
@@ -144,10 +145,10 @@ switch( $format )
     break;
   
   case 'xml':
-  	if( !function_exists( 'simplexml_load_string' )) {
-  		exit( "Error: your PHP lacks SimpleXML support!\n" );
-  	}
-  	
+    if( !function_exists( 'simplexml_load_string' )) {
+      exit( "Error: your PHP lacks SimpleXML support!\n" );
+    }
+    
     $xml = simplexml_load_string( '<?xml version="1.0" encoding="utf-8"?><gsxResult />' );
     
     foreach ($result as $k => $v)
@@ -208,5 +209,3 @@ switch( $format )
     print_r($result);
     break;
 }
-
-?>
