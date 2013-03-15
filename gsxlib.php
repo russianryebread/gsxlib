@@ -192,14 +192,17 @@ class GsxLib
     
     public function createCarryInRepair($repairData)
     {
-        if( $repairData['fileData'] && file_exists( $repairData['fileData'] ))
+        if( array_key_exists('fileData', $repairData ))
         {
             $fp = $repairData['fileData'];
-            $fh = fopen($fp, "r");
-            $contents = fread($fh, filesize($fp));
-            $repairData['fileData'] = $contents;
-            $repairData['fileName'] = basename($fp);
-            fclose($fh);
+            if( is_readable( $fp ))
+            {
+                $fh = fopen($fp, "r");
+                $contents = fread($fh, filesize($fp));
+                $repairData['fileData'] = $contents;
+                $repairData['fileName'] = basename($fp);
+                fclose($fh);
+            }
         }
 
         $resp = $this->client->CreateCarryInRepair(
