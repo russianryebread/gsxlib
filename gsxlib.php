@@ -192,6 +192,16 @@ class GsxLib
     
     public function createCarryInRepair($repairData)
     {
+        if( $repairData['fileData'] && file_exists( $repairData['fileData'] ))
+        {
+            $fp = $repairData['fileData'];
+            $fh = fopen($fp, "r");
+            $contents = fread($fh, filesize($fp));
+            $repairData['fileData'] = $contents;
+            $repairData['fileName'] = basename($fp);
+            fclose($fh);
+        }
+
         $resp = $this->client->CreateCarryInRepair(
             array('CreateCarryInRequest' => array(
                 'userSession'   => array('userSessionId' => $this->getSessionId()),

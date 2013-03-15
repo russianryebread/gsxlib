@@ -1,10 +1,11 @@
 {
-	"shipTo": "677592",
+	"popFaxed": "N",
+	"shipTo": "",
 	"requestReviewByApple": "N",
-	"serialNumber": "C3TFJJTNDCP9",
+	"serialNumber": "",
 	"symptom": "Does not work",
 	"diagnosis": "Does not work",
-	"unitReceivedDate": "01/01/13",
+	"unitReceivedDate": "03/10/13",
 	"unitReceivedTime": "12:00 AM",
 	"checkIfOutOfWarrantyCoverage": "N",
 	"overrideDiagnosticCodeCheck": "Y",
@@ -12,7 +13,7 @@
 	"orderLines": [
 		{
 			"partNumber": "FD661-6136",
-			"comptiaCode": "T03",
+			"comptiaCode": "E01",
 			"comptiaModifier": "B",
 			"abused": "Y",
 			"outOfWarrantyFlag": "N",
@@ -32,5 +33,6 @@
 		"companyName": "Apple Inc",
 		"primaryPhone": "4088887766",
 		"emailAddress": "abc@test.com"
-	}
+	},
+	"fileData": "/tmp/test.pdf"
 }

@@ -39,7 +39,7 @@ usage: gsxcl -s sold-to -u username -p password [-r region] [-e environment] [-f
                   Defaults to production
   -f  format      the output format. Either print_r (default), json, xml or csv
   -d  data        data for the query (serial number, order confirmation, repair number, EEE code, etc
-                  Defaults to this machine's serial number
+                  Defaults to this machine's serial number. Or path to a JSON file.
       noun        one of: {$verbs_str}
       verb        one of: {$nouns_str}
 
@@ -121,6 +121,11 @@ switch( $noun ) {
         break;
       case 'status':
         $result = $gsx->repairStatus( $query );
+        break;
+      case 'create':
+        $json = file_get_contents( $opts['d'] );
+        $data = json_decode( $json, TRUE );
+        $result = $gsx->createCarryInRepair( $data );
         break;
     }
     
