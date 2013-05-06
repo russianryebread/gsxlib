@@ -48,5 +48,5 @@ mainly as a simple test tool for the library.
     TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
     0. You just DO WHAT THE FUCK YOU WANT TO.
 
-[1]: http://gsxwsut.apple.com/apidocs/html/WSReference.html?user=asp
+[1]: https://gsxwsut.apple.com/apidocs/ut/html/WSHome.html
 [2]: http://php.net/manual/en/book.soap.php

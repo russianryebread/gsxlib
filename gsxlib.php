@@ -180,14 +180,15 @@ class GsxLib
     
     public function fetchiOsActivation($query)
     {
-        $like = self::looksLike($query);
-        
-        $request = array('FetchIOSActivationDetails' => array(
-            $like => $query
-        ));
-        
+        if( !is_array($query )) {
+            $like = self::looksLike( $query );
+            $query = array( $like => $query );
+        }
+
+        $request = array( 'FetchIOSActivationDetails' => $query );
+
         return $this->request($request)->activationDetailsInfo;
-        
+
     }
     
     public function createCarryInRepair($repairData)
@@ -422,6 +423,14 @@ class GsxLib
     {
         if( !is_array( $serialNumber )) {
             $serialNumber = array('serialNumber' => $serialNumber);
+        }
+
+        if( array_key_exists( 'alternateDeviceId', $serialNumber )) {
+            # checking warranty with IMEI code - must run activation check first
+            $ad = $this->fetchiOsActivation( $serialNumber );
+            $wty = $this->warrantyStatus( $ad->serialNumber );
+            $wty->activationDetails = $ad;
+            return $wty;
         }
 
         $req = array( 'WarrantyStatus' => array( 'unitDetail'  => $serialNumber ));

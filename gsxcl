@@ -35,13 +35,12 @@ usage: gsxcl -s sold-to -u username -p password [-r region] [-e environment] [-f
   -p  password    the password for the Apple ID
   -r  region      either "am" (America), "emea" (default, Europe, Middle-East, Africa)
                   "apac" (Asia-Pacific) or "la" (Latin America)
-  -e  environment the GSX environment. Either empty (production), "it" or "ut"
-                  Defaults to production
+  -e  environment the GSX environment. Either empty (production, default), "it" or "ut"
   -f  format      the output format. Either print_r (default), json, xml or csv
   -d  data        data for the query (serial number, order confirmation, repair number, EEE code, etc
                   Defaults to this machine's serial number. Or path to a JSON file.
-      noun        one of: {$verbs_str}
       verb        one of: {$nouns_str}
+      noun        one of: {$verbs_str}
 
 EOT;
   exit();
