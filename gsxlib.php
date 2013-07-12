@@ -375,13 +375,16 @@ class GsxLib
     */
     public function repairDetails($dispatchId)
     {
-        $dispatchId = trim($dispatchId);
-
-        if( !self::looksLike( $dispatchId, 'dispatchId' )) {
-            exit( 'Invalid dispatch ID: ' . $dispatchId );
+        if (is_string($dispatchId)) {
+            $dispatchId = trim($dispatchId);
+            if( !self::looksLike( $dispatchId, 'dispatchId' )) {
+                $error = sprintf('Invalid dispatch ID: %s', $dispatchId);
+                throw new InvalidArgumentException($error);
+            }
+            $dispatchId = array('dispatchId' => $dispatchId);
         }
 
-        $req = array('RepairDetails' => array('dispatchId' => $dispatchId));
+        $req = array('RepairDetails' => $dispatchId);
         return $this->request($req)->lookupResponseData;
 
     }

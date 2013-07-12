@@ -116,10 +116,10 @@ switch( $noun ) {
         $result = $gsx->repairLookup( $data );
         break;
       case 'details':
-        $result = $gsx->partsPendingReturn( $data );
+        $result = $gsx->repairDetails( $data );
         break;
       case 'status':
-        $result = $gsx->repairStatus( $query );
+        $result = $gsx->repairStatus( $data );
         break;
       case 'create':
         $json = file_get_contents( $opts['d'] );
@@ -129,13 +129,13 @@ switch( $noun ) {
     }
     
   case 'model':
-    $result = $gsx->productModel( $query );
+    $result = $gsx->productModel( $data );
     break;
   case 'osdispatchdetail':
-    $result = $gsx->onsiteDispatchDetail( $query );
+    $result = $gsx->onsiteDispatchDetail( $data );
     break;
   case 'label':
-    list($order, $part) = explode( ':', $query );
+    list($order, $part) = explode( ':', $data );
     $result = $gsx->returnLabel( $order, $part );
     $name = $result->returnLabelFileName;
     echo $result->returnLabelFileData;
