@@ -2,7 +2,7 @@
 /**
  * gsxlib/gsxlib.php
  * @package gsxlib
- * @author Filipp Lepalaan <filipp@mcare.fi>
+ * @author Filipp Lepalaan <filipp@fps.ee>
  * https://gsxwsut.apple.com/apidocs/html/WSReference.html?user=asp
  * @license
  * This program is free software. It comes without any warranty, to
@@ -121,7 +121,7 @@ class GsxLib
                 ->AuthenticateResponse
                 ->userSessionId;
         } catch(SoapFault $e) {
-            if(empty($environment)) $environment = 'production';
+            if($environment == '2') $environment = 'production';
 
             $error = 'Authentication with GSX failed. Does this account have access to '
                 .$environment."?\n";
@@ -180,23 +180,23 @@ class GsxLib
     
     public function fetchiOsActivation($query)
     {
-        if( !is_array($query )) {
-            $like = self::looksLike( $query );
-            $query = array( $like => $query );
+        if(!is_array($query)) {
+            $like = self::looksLike($query);
+            $query = array($like => $query);
         }
 
-        $request = array( 'FetchIOSActivationDetails' => $query );
+        $request = array('FetchIOSActivationDetails' => $query);
 
         return $this->request($request)->activationDetailsInfo;
 
     }
-    
-    public function createCarryInRepair($repairData)
+
+    private function processRepairData($repairData)
     {
-        if( array_key_exists('fileData', $repairData ))
+        if(array_key_exists('fileData', $repairData))
         {
             $fp = $repairData['fileData'];
-            if( is_readable( $fp ))
+            if(is_readable($fp))
             {
                 $fh = fopen($fp, "r");
                 $contents = fread($fh, filesize($fp));
@@ -206,20 +206,47 @@ class GsxLib
             }
         }
 
+        return $repairData;
+
+    }
+
+    public function createCarryInRepair($repairData)
+    {
+        /**
+         * GSX validates the information and if all of the validations go through,
+         * it obtains a quote for the repair and creates the carry-in repair.
+         */
+        $repairData = $this->processRepairData($repairData);
+
         $resp = $this->client->CreateCarryInRepair(
             array('CreateCarryInRequest' => array(
                 'userSession'   => array('userSessionId' => $this->getSessionId()),
                 'repairData'    => $repairData
             ))
         );
-        
+
         return $resp->CreateCarryInResponse;
-        
+
     }
     
     public function createMailInRepair($repairData)
     {
-        
+        /**
+         * This API allows the submission of Mail-In Repair information into GSX,
+         * resulting in the creation of a GSX Mail-In Repair.
+         */
+
+        $repairData = $this->processRepairData($repairData);
+
+        $resp = $this->client->CreateMailInRepair(
+            array('CreateMailInRepairRequest' => array(
+                'userSession'   => array('userSessionId' => $this->getSessionId()),
+                'repairData'    => $repairData
+            ))
+        );
+
+        return $resp->CreateMailInRepairResponse;
+
     }
     
     public function bulkReturnProforma() {}
@@ -421,19 +448,19 @@ class GsxLib
     */
     public function warrantyStatus($serialNumber)
     {
-        if( !is_array( $serialNumber )) {
+        if(!is_array($serialNumber)) {
             $serialNumber = array('serialNumber' => $serialNumber);
         }
 
-        if( array_key_exists( 'alternateDeviceId', $serialNumber )) {
+        if(array_key_exists('alternateDeviceId', $serialNumber)) {
             # checking warranty with IMEI code - must run activation check first
-            $ad = $this->fetchiOsActivation( $serialNumber );
-            $wty = $this->warrantyStatus( $ad->serialNumber );
+            $ad = $this->fetchiOsActivation($serialNumber);
+            $wty = $this->warrantyStatus($ad->serialNumber);
             $wty->activationDetails = $ad;
             return $wty;
         }
 
-        $req = array( 'WarrantyStatus' => array( 'unitDetail'  => $serialNumber ));
+        $req = array('WarrantyStatus' => array('unitDetail'  => $serialNumber));
 
         return $this->request($req)->warrantyDetailInfo;
 
@@ -442,7 +469,8 @@ class GsxLib
     public function productModel($serialNumber)
     {
         if(!$this->isValidSerialNumber($serialNumber)) {
-            exit('Invalid serial number: ' . $serialNumber);
+            $error = sprintf('Invalid serial number: %s', $serialNumber);
+            throw new InvalidArgumentException($error);
         }
 
         $req = array( 'FetchProductModelRequest' => array(
@@ -454,9 +482,7 @@ class GsxLib
             )
         ));
 
-        $response = $this->client
-            ->FetchProductModel($req)
-            ->FetchProductModelResponse;
+        $response = $this->client->FetchProductModel($req)->FetchProductModelResponse;
         
         return $response->productModelResponse;
     }
