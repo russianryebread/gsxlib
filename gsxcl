@@ -47,7 +47,7 @@ EOT;
 }
 
 $opts = getopt( 's:u:p:r:e:m:q:f:d:' );
-list( $noun, $verb ) = array_slice( $argv, -2, 2 );
+list( $verb, $noun ) = array_slice( $argv, -2, 2 );
 
 if( !in_array( $noun, $nouns )) {
   exit( "Error: invalid noun - {$noun}.\n" );
