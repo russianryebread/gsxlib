@@ -39,8 +39,8 @@ usage: gsxcl -s sold-to -u username -p password [-r region] [-e environment] [-f
   -f  format      the output format. Either print_r (default), json, xml or csv
   -d  data        data for the query (serial number, order confirmation, repair number, EEE code, etc
                   Defaults to this machine's serial number. Or path to a JSON file.
-      verb        one of: {$nouns_str}
-      noun        one of: {$verbs_str}
+      verb        one of: {$verbs_str}
+      noun        one of: {$nouns_str}
 
 EOT;
   exit();
