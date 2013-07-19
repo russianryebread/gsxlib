@@ -127,6 +127,8 @@ switch( $noun ) {
         $result = $gsx->createCarryInRepair( $data );
         break;
     }
+
+  break;
     
   case 'model':
     $result = $gsx->productModel( $data );
