@@ -14,10 +14,6 @@
  * http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-if (TRUE) {
-  error_reporting( E_ALL|E_STRICT );
-}
-
 $nouns = array( 'repair', 'part', 'dispatch', 'order', 'return', 'warranty' );
 $verbs = array( 'create', 'lookup', 'update', 'status', 'label', 'pending', 'details' );
 
@@ -29,7 +25,8 @@ require 'gsxlib.php';
 if( count( $argv ) < 6 ) {
   echo <<<EOT
 
-usage: gsxcl -s sold-to -u username -p password [-r region] [-e environment] [-f format] verb noun
+usage: gsxcl [--debug] -s sold-to -u username -p password [-r region] [-e environment] [-f format] verb noun
+  --debug         Report all errors
   -s  sold-to     your GSX Sold-To account
   -u  username    the Apple ID with GSX WS API access
   -p  password    the password for the Apple ID
@@ -46,7 +43,7 @@ EOT;
   exit();
 }
 
-$opts = getopt( 's:u:p:r:e:m:q:f:d:' );
+$opts = getopt( 's:u:p:r:e:m:q:f:d:', array( 'debug' ));
 list( $verb, $noun ) = array_slice( $argv, -2, 2 );
 
 if( !in_array( $noun, $nouns )) {
@@ -60,6 +57,12 @@ if( !in_array( $verb, $verbs )) {
 $region = ( isset( $opts['r'] )) ? $opts['r'] : 'emea';
 $format = ( isset($opts['f'] )) ? $opts['f'] : 'print_r';
 $environment = ( isset( $opts['e'] )) ? $opts['e'] : null;
+
+if( array_key_exists('debug', $opts )) {
+  error_reporting( E_ALL|E_STRICT );
+} else {
+  error_reporting(0);
+}
 
 switch( $noun )
 {
