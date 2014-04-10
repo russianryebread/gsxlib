@@ -32,7 +32,8 @@ class GsxLib
         $password,
         $environment = '',
         $region = 'emea',
-        $tz = 'CEST')
+        $tz = 'CEST',
+        $lang = 'en')
     {
         if(!(self::$_instance instanceof self)) {
             self::$_instance = new self(
@@ -41,7 +42,8 @@ class GsxLib
                 $password,
                 $environment,
                 $region,
-                $tz
+                $tz,
+                $lang
             );
         }
 
@@ -57,7 +59,8 @@ class GsxLib
         $password,
         $environment = '',
         $region = 'emea',
-        $tz = 'CEST' )
+        $tz = 'CEST',
+        $lang = 'en' )
     {
         if(!class_exists('SoapClient')) {
             throw new GsxException('Looks like your PHP lacks SOAP support');
@@ -110,7 +113,7 @@ class GsxLib
                 'userId'            => $username,
                 'password'          => $password,
                 'serviceAccountNo'  => $account,
-                'languageCode'      => 'en',
+                'languageCode'      => $lang,
                 'userTimeZone'      => $tz,
             )
         );
@@ -124,7 +127,7 @@ class GsxLib
             if($environment == '2') $environment = 'production';
 
             $error = 'Authentication with GSX failed. Does this account have access to '
-                .$environment."?\n";
+                .$environment." environment?\n";
             throw new GsxException($error);
 
         }
@@ -290,8 +293,7 @@ class GsxLib
             'lookupRequestData' => $query 
         ));
 
-        $response = $this->client->RepairLookup($req)
-            ->RepairLookupResponse;
+        $response = $this->client->RepairLookup($req)->RepairLookupResponse;
         return $response->lookupResponseData;
   }
   
@@ -436,9 +438,7 @@ class GsxLib
             
         }
 
-        $req = array('PartsLookup' => array(
-            'lookupRequestData' => $query
-        ));
+        $req = array('PartsLookup' => array('lookupRequestData' => $query));
 
         $result = $this->request($req)->parts;
         // always return an array

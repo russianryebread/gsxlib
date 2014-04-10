@@ -7,7 +7,7 @@ class GsxlibTest extends UnitTestCase
 {
     function setUp() {
         global $argv;
-        $this->gsx = GsxLib::getInstance($argv[1], $argv[2], $argv[3], 'ut');
+        $this->gsx = GsxLib::getInstance($argv[1], $argv[2], $argv[3], 'ut', 'emea', 'CEST', 'es');
     }
 
     function testWarranty() {
