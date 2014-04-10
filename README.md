@@ -6,28 +6,32 @@ from knowing the underlying PHP SOAP architecture and to some extent even the GS
 some performance benefits by minimizing the number of requests made to the servers as well as doing some rudimentary input
 validation (as opposed to burdening Apple's servers with totally invalid requests).
 
+
 Requrements
 ===========
 
-- SOAP support in your PHP.
-- GSX account with the "Can access Web Services" privilege enabled
+- SOAP support in your PHP installation
+- A GSX account with the "Can access Web Services" privilege enabled
 
 Usage
 =====
 
 Best illustrated with a simple example:
 
-    <?php
-  
-      include 'gsxlib/gsxlib.php';
-      $gsx = GsxLib::getInstance($sold_to, $username, $password);
-      $info = $gsx->warrantyStatus($serialnumber);
-      echo $info->productDescription;
-      > MacBook Pro (15-inch 2.4/2.2GHz)
-      
-    ?>
+```php
+<?php
 
-If you're in the US, remember to set the fifth argument to the constructor to 'am'.
+  include 'gsxlib/gsxlib.php';
+  $gsx = GsxLib::getInstance($sold_to, $username, $password);
+  $info = $gsx->warrantyStatus($serialnumber);
+  echo $info->productDescription;
+  > MacBook Pro (15-inch 2.4/2.2GHz)
+  
+?>
+```
+
+US users should remember to set the fifth argument of the constructor to 'am'.
+
 
 gsxcl
 =====
