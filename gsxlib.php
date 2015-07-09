@@ -17,10 +17,15 @@ class GsxLib
     private $region;
     private $session_id;
     private $environment;
+    
+    // LOCATION OF COMBINED APPLE CERT AND PRIVATE KEY;
+    private $local_cert = '';
+    // PASSPHRASE USED WHEN CREATING CSR
+    private $passphrase = '';
 
     //IT: https://gsxws%s.apple.com/wsdl/%sAsp/gsx-%sAsp.wsdl
     //PROD: https://gsxws2.apple.com/wsdl/%sAsp/gsx-%sAsp.wsdl
-    private $wsdl = 'https://gsxws%s.apple.com/wsdl/%sAsp/gsx-%sAsp.wsdl';
+    private $wsdl = 'https://gsxapiut.apple.com/wsdl/emeaAsp/gsx-emeaAsp.wsdl';
 
     static $_instance;
 
@@ -96,9 +101,19 @@ class GsxLib
         
         $this->wsdl = sprintf($this->wsdl, $environment, $region, $region);
         
-        $this->client = new SoapClient(
-            $this->wsdl, array('exceptions' => TRUE, 'trace' => 1)
-        );
+        try {
+            $this->client = new SoapClient(
+                $this->wsdl, array(
+                    'exceptions' => TRUE,
+                    'trace' => 1,
+                    'local_cert' => $this->local_cert,
+                    'passphrase' => $this->passphrase,
+                )
+            );
+        } catch (SoapFault $e) {
+            echo"ERROR:<HR>";
+            print_r($e);
+        }
         
         if(!$this->client) {
            throw new GsxException('Failed to create SOAP client.');
@@ -111,7 +126,6 @@ class GsxLib
         $a = array(
             'AuthenticateRequest' => array(
                 'userId'            => $username,
-                'password'          => $password,
                 'serviceAccountNo'  => $account,
                 'languageCode'      => $lang,
                 'userTimeZone'      => $tz,
